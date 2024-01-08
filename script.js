@@ -1,244 +1,330 @@
+// For RGB / global clustering results
+var video_width = 960;
+const VIDEO_ASPECT_RATIO = 16.0 / 9.0;
+var display_level = 0;
+var video_names = ['dozer', 'bouquet'];
+var videos = [];
+var current_video_idx = 0;
 
-// For teaser object carousel -- left/right arrow clicks to navigate
-function teaser_slide_left() {
-  slider_window = document.getElementById('teaser-objs-scroll');
-  slider_window.scrollLeft = 0;
+function load_videos() {
+  for (var i = 0; i < video_names.length; i++) {
+    videos.push(document.getElementById(video_names[i])); 
+  }
 }
-function teaser_slide_right() {
-  slider_window = document.getElementById('teaser-objs-scroll');
-  slider_window.scrollLeft += 1000;
-}
-
-// // For teaser object carousel -- *automatic* carousel scrolling
-// function teaser_scroll() {
-//   slider_window = document.getElementById('teaser-objs-scroll');
-//   slider_window.scrollLeft += 100;
-//   if (slider_window.scrollLeft >= 1000) teaser_slide_left();
-//   scrolldelay = setTimeout('teaser_scroll()', 2000); // scrolls every 100 milliseconds
-// }
 
 window.onload = function() {
-  // teaser_scroll();
-  $(function(){
-    $(".twentytwenty-container").twentytwenty();
-  });
+  load_videos();
+  videos[0].play();
 }
 
+/* Synchronize main_results, and its canvas(es) to have the same size. */
+function resize_canvas() {
+  var main_results = document.getElementById('image-compare-canvas');
+  var width = main_results.offsetWidth;
 
-// var video_names = ['bouquet','figurines','kitchen', 'donuts', 'teatime', 'bookstore', 'grocery', 'garden', 'shoes'];
-// var download_paths = [
-//   'data/high_res/bouquet.mp4',
-//   'data/high_res/figurines.mp4',
-//   'data/high_res/kitchen.mp4', 
-//   'data/high_res/donuts.mp4', 
-//   'data/high_res/teatime.mp4',
-//   'data/high_res/bookstore.mp4',
-//   'data/high_res/veggie_aisle.mp4',
-//   'data/high_res/sunnyside.mp4',
-//   'data/high_res/shoe_rack.mp4'
-// ];
-// var videos = [];
+  var height = width / VIDEO_ASPECT_RATIO;
+  main_results.height = height;
+  main_results.style.height = height;
 
-// var video_width = 960;
-// const VIDEO_ASPECT_RATIO = 16.0 / 9.0;
+  video_width = width;
 
-// $(function() {
-//     var canvas = document.getElementById('canvas');
-//     var ctx = canvas.getContext('2d');
+  var canvas = document.getElementById('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  canvas.style.width = width;
+  canvas.style.height = height;
+}
 
-//     current_video_idx = 0;
+// Need to trigger a `resize` when window size changes. 
+// In particular, need to do resize after content loaded, to define height of the canvas!
+// Otherwise, the canvas for main-results display won't work.
+window.addEventListener('resize', resize_canvas, false);
+document.addEventListener("DOMContentLoaded", function() { resize_canvas(); });
 
-//     thumbnails = [
-//       document.getElementById('thumb-0'),
-//       document.getElementById('thumb-1'),
-//       document.getElementById('thumb-2'),
-//       document.getElementById('thumb-3'),
-//       document.getElementById('thumb-4'),
-//       document.getElementById('thumb-5'),
-//       document.getElementById('thumb-6'),
-//       document.getElementById('thumb-7'),
-//       document.getElementById('thumb-8'),
-//     ];
-//     for (var i = 0; i < thumbnails.length; i++) {
-//       thumbnails[i].addEventListener('click', change_video_index.bind(this, i));
-//     }
-    
-//     var canvas_overlay = document.getElementById('canvas-overlay');
-//     var ctx_overlay = canvas_overlay.getContext('2d');
+/* Image compare utility. Requires jquery + tabler-icons. */
+$(() => {
+  $(".image-compare").each((_index, parent) => {
+    const $parent = $(parent);
+    const before = $parent.data("before-label") || "Before";
+    const after = $parent.data("after-label") || "After";
+    $parent.append(
+      "<div id='image-compare-handle' class='image-compare-handle'><i class='ti ti-arrows-horizontal'></i></div>" +
+        "<div id='image-compare-before' class='image-compare-before'><div>" +
+        before +
+        "</div></div>" +
+        "<div id='image-compare-after' class='image-compare-after'><div>" +
+        after +
+        "</div></div>",
+    );
+  });
 
-//     if (videos.length == 0) {
-//       load_videos();
-//     };
+  setInterval(() => {
+    $(".image-compare").each((_index, parent) => {
+      const $parent = $(parent);
+      const $handle = $parent.children(".image-compare-handle");
 
-//     (function loop() {
-//       video = videos[current_video_idx]
-//       ctx.drawImage(video, 0, 0, 960, 540, 0, 0, video_width, video_width/VIDEO_ASPECT_RATIO);
-//       ctx_overlay.drawImage(video, 960, 0, 960, 540, 0, 0, video_width, video_width/VIDEO_ASPECT_RATIO);
-//       setTimeout(loop, 1000 / 60); // drawing at 30fps
-//       set_play_pause_icon();
-//     })();
+      const currentLeft = $handle.position().left;
 
-//   });
-  
-// function change_video_index (idx) {
-//   thumbnails[idx].classList.add("active-btn");
-//   if (current_video_idx != idx) {
-//     thumbnails[current_video_idx].classList.remove("active-btn");
-//   }
-//   videos[current_video_idx].pause()
-//   current_video_idx = idx;
-//   current_video = videos[current_video_idx]
-//   current_video.currentTime = 0;
-//   current_video.play();
-//   set_play_pause_icon();
-// }
+      // Linear dynamics + PD controller : - )
+      const Kp = 0.03;
+      const Kd = 0.2;
 
-// function fullscreen() {
-//   current_video = videos[current_video_idx]
-//   current_video.style.visibility = "visible";
-//   const fullscreenElement =
-//     document.fullscreenElement ||
-//     document.mozFullScreenElement ||
-//     document.webkitFullscreenElement ||
-//     document.msFullscreenElement;
-//   if (fullscreenElement) {
-//     exitFullscreen();
-//   } else {
-//     launchIntoFullscreen(current_video);
-//   }
-// }
+      let velocity = $parent.data("velocity") || 0;
+      let targetLeft = $parent.data("targetX");
+      if (targetLeft !== undefined) {
+        const padding = 10;
+        const parentWidth = $parent.width();
+        if (targetLeft <= padding) targetLeft = 0;
+        if (targetLeft >= parentWidth - padding) targetLeft = parentWidth;
 
-// function download() {
-//   current_video = videos[current_video_idx]
-//   var link = document.createElement('a');
-//   link.download = video_names[current_video_idx] + '.mp4';
-//   link.href = download_paths[current_video_idx];
-//   link.click();
-// }
+        const delta = targetLeft - currentLeft;
+        velocity += Kp * delta;
+      }
+      velocity -= Kd * velocity;
 
-// function launchIntoFullscreen(element) {
-//   if (element.requestFullscreen) {
-//     element.requestFullscreen();
-//   } else if (element.mozRequestFullScreen) {
-//     element.mozRequestFullScreen();
-//   } else if (element.webkitRequestFullscreen) {
-//     element.webkitRequestFullscreen();
-//   } else if (element.msRequestFullscreen) {
-//     element.msRequestFullscreen();
-//   } else {
-//     element.classList.toggle('fullscreen');
-//   }
-// }
+      // Update velocity.
+      $parent.data("velocity", velocity);
 
-// function exitFullscreen() {
-//   if (document.exitFullscreen) {
-//     document.exitFullscreen();
-//   } else if (document.mozCancelFullScreen) {
-//     document.mozCancelFullScreen();
-//   } else if (document.webkitExitFullscreen) {
-//     document.webkitExitFullscreen();
-//   }
-// }
+      const newLeft = currentLeft + velocity;
+      $parent.children(".image-compare-handle").css("left", newLeft + "px");
+      $parent.children(".image-compare-before").width(newLeft + "px");
+      // $parent.children("img:not(:first-child)").width(newLeft + "px");
 
-// if (document.addEventListener)
-// {
-//  document.addEventListener('fullscreenchange', exitHandler, false);
-//  document.addEventListener('mozfullscreenchange', exitHandler, false);
-//  document.addEventListener('MSFullscreenChange', exitHandler, false);
-//  document.addEventListener('webkitfullscreenchange', exitHandler, false);
-// }
+      // $parent.children(".image-compare-after").style.right = 0;
+      $parent.children(".image-compare-after").css("left", newLeft + "px");
+      $parent.children(".image-compare-after").width(video_width - newLeft + "px");
 
-// function exitHandler()
-// {
-//  if (!document.webkitIsFullScreen && !document.mozFullScreen && !document.msFullscreenElement)
-//  {
-//   current_video = videos[current_video_idx]
-//   current_video.style.visibility = "hidden";
-//  }
-// }
+      var canvas = document.getElementById('canvas');
+      var ctx = canvas.getContext('2d');
 
-// function load_videos() {
-//   for (var i = 0; i < video_names.length; i++) {
-//     videos.push(document.getElementById(video_names[i])); 
-//   }
-// }
+      if (videos.length == 0) load_videos();
 
-// function set_play_pause_icon() {
-//   button = document.getElementById('play-btn')
-//   current_video = videos[current_video_idx]
-//   if (current_video.paused) {
-//     button.classList.remove("fa-pause");
-//     button.classList.add("fa-play");
-//   } else {
-//     button.classList.add("fa-pause");
-//     button.classList.remove("fa-play");
-//   }
-// }
+      const newLeftVideo = newLeft * 960/video_width;
+      video = videos[current_video_idx];
 
-// function play_pause() {
-//   current_video = videos[current_video_idx]
-//   if (current_video.paused) {
-//     current_video.play();
-//   } else {
-//     current_video.pause();
-//   }
-//   set_play_pause_icon();
-// }
+      // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+      ctx.drawImage(
+        video, 
+        0, 0, newLeftVideo, 520,
+        0, 0, newLeft, video_width/VIDEO_ASPECT_RATIO
+        );  // RGB
+      ctx.drawImage(
+        video,
+        960*(display_level+1)+newLeftVideo, 0, 960-newLeftVideo, 520, newLeft, 
+        0, video_width-newLeft, video_width/VIDEO_ASPECT_RATIO
+        ); // cluster visualizations
+    });
+  }, 10);
 
-// function resize_canvas() {
-//   var canvas = document.getElementById('canvas');
-//   var canvas_overlay = document.getElementById('canvas-overlay');
-//   var main_results = document.getElementById('main-results');
+  $(".image-compare").bind("mousedown touchstart", (evt) => {
+    const $parent = $(evt.target.closest(".image-compare"));
+    $parent.data("dragging", true);
 
-//   var width = main_results.offsetWidth;
-//   var height = width / VIDEO_ASPECT_RATIO;
+    if (evt.type == "mousedown")
+      $parent.data("targetX", evt.pageX - $parent.offset().left);
+    else if (evt.type == "touchstart")
+      $parent.data("targetX", evt.touches[0].pageX - $parent.offset().left);
+  });
 
-//   main_results.style.height = height;
+  $(document)
+    .bind("mouseup touchend", () => {
+      $(".image-compare").each((_index, parent) => {
+        $(parent).data("dragging", false);
+      });
+    })
+    .bind("mousemove touchmove", (evt) => {
+      $(".image-compare").each((_index, parent) => {
+        const $parent = $(parent);
+        if (!$parent.data("dragging")) return;
 
-//   video_width = width;
-//   canvas.width = width;
-//   canvas.height = height;
-//   canvas.style.width = width;
-//   canvas.style.height = height;
-//   canvas_overlay.width = width;
-//   canvas_overlay.height = height;
-//   canvas_overlay.style.width = width;
-//   canvas_overlay.style.height = height;
-// }
+        if (evt.type == "mousemove")
+          $parent.data("targetX", evt.pageX - $parent.offset().left);
+        else if (evt.type == "touchmove")
+          $parent.data("targetX", evt.touches[0].pageX - $parent.offset().left);
+      });
+    });
+}, 1000 / 60);  // 30fps
 
-// window.onload = function() {
-//   const root = document.documentElement;
-//   const checkbox = document.getElementById('opacity-toggle')
+/* Switcher. */
+// Contains logic for switching between coarse/medium/fine.
+$(() => {
+  $(".switcher").each((switcher_index, switcher) => {
+    const $switcher = $(switcher);
 
-//   load_videos();
-//   checkbox.addEventListener('change', (event) => {
-//     if (event.currentTarget.checked) {
-//       root.style.setProperty("--opacity", `100%`);
-//     } else {
-//       root.style.setProperty("--opacity", `0%`);
-//     }
-//   })
+    const $inputContainer = $("<div>", { class: "switcher-labels" });
 
-//   change_video_index(0);
-//   videos[0].play();
+    let $current = null;
 
-//   const hoverImage = document.getElementById('hover-image');
-//   const gptQueries = document.querySelectorAll('.gpt-query');
+    $switcher.children().each((switcher_child_index, child) => {
+      const $child = $(child);
 
-//   gptQueries.forEach(query => {
-//     query.addEventListener('mouseover', () => {
-//       hoverImage.src = 'data/gpt_example/' + query.id + '.jpg';
-//     });
-//     query.addEventListener('mouseout', () => {
-//       hoverImage.src = 'data/gpt_example/base.jpg';
-//     });
-//   });
+      const linkId =
+        "switcher-group-" +
+        switcher_index.toString() +
+        "-" +
+        switcher_child_index.toString();
+      const $input = $("<input>", {
+        type: "radio",
+        name: "switcher-group-" + switcher_index.toString(),
+        id: linkId,
+        checked: switcher_child_index === 0,
+        click: function () {
+          // Your onclick event logic goes here
+          $current.addClass("switcher-hidden");
+          display_level = switcher_child_index;
 
-// }
+          $current = $([]);
+          $.merge($current, $child);
+          $.merge($current, $input);
+          $.merge($current, $label);
 
-// window.addEventListener('resize', resize_canvas, false);
+          $current.removeClass("switcher-hidden");
+        },
+      });
+      const $label = $("<label>", {
+        text: $child.data("switcher-label"),
+        for: linkId,
+      });
+      $inputContainer.append($("<div>").append($input).append($label));
 
-// document.addEventListener("DOMContentLoaded", function() {
-//   resize_canvas();
-// });
+      if (switcher_child_index !== 0) {
+        $child.addClass("switcher-hidden");
+        $input.addClass("switcher-hidden");
+        $label.addClass("switcher-hidden");
+      } else {
+        $current = $([]);
+        $.merge($current, $child);
+        $.merge($current, $input);
+        $.merge($current, $label);
+      }
+    });
 
+    const $label = $("<label>", {
+      text: $switcher.data("switcher-title") + ":",
+    });
+    $inputContainer.prepend($label);
+
+    $switcher.append($inputContainer);
+  });
+});
+
+function set_play_pause_icon() {
+  button = document.getElementById('play-btn')
+  current_video = videos[current_video_idx]
+  if (current_video.paused) {
+    button.classList.remove("fa-pause");
+    button.classList.add("fa-play");
+  } else {
+    button.classList.add("fa-pause");
+    button.classList.remove("fa-play");
+  }
+}
+
+function play_pause() {
+  current_video = videos[current_video_idx]
+  if (current_video.paused) {
+    current_video.play();
+  } else {
+    current_video.pause();
+  }
+  set_play_pause_icon();
+}
+function fullscreen() {
+  current_video = videos[current_video_idx]
+  current_video.style.visibility = "visible";
+  const fullscreenElement =
+    document.fullscreenElement ||
+    document.mozFullScreenElement ||
+    document.webkitFullscreenElement ||
+    document.msFullscreenElement;
+  if (fullscreenElement) {
+    exitFullscreen();
+  } else {
+    launchIntoFullscreen(current_video);
+  }
+}
+
+function download() {
+  current_video = videos[current_video_idx]
+  var link = document.createElement('a');
+  link.download = video_names[current_video_idx] + '.mp4';
+  link.href = download_paths[current_video_idx];
+  link.click();
+}
+
+function launchIntoFullscreen(element) {
+  if (element.requestFullscreen) {
+    element.requestFullscreen();
+  } else if (element.mozRequestFullScreen) {
+    element.mozRequestFullScreen();
+  } else if (element.webkitRequestFullscreen) {
+    element.webkitRequestFullscreen();
+  } else if (element.msRequestFullscreen) {
+    element.msRequestFullscreen();
+  } else {
+    element.classList.toggle('fullscreen');
+  }
+}
+
+function exitFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.mozCancelFullScreen) {
+    document.mozCancelFullScreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
+}
+
+if (document.addEventListener)
+{
+ document.addEventListener('fullscreenchange', exitHandler, false);
+ document.addEventListener('mozfullscreenchange', exitHandler, false);
+ document.addEventListener('MSFullscreenChange', exitHandler, false);
+ document.addEventListener('webkitfullscreenchange', exitHandler, false);
+}
+
+function exitHandler()
+{
+ if (!document.webkitIsFullScreen && !document.mozFullScreen && !document.msFullscreenElement)
+ {
+  current_video = videos[current_video_idx]
+  current_video.style.visibility = "hidden";
+ }
+}
+
+/* Switcher. */
+// Contains logic for switching between coarse/medium/fine.
+$(() => {
+  $(".results-slide-row").each((switcher_index, switcher) => {
+    const $switcher = $(switcher);
+    console.log($switcher);
+    console.log($switcher.children());
+
+    $switcher.children().each((switcher_child_index, child) => {
+      const $child = $(child);
+
+      const $input = $("<button>", {
+        class: "thumbnail-btn",
+        id: "thumb-" + switcher_index.toString(),
+        click: function () {
+          // Your onclick event logic goes here
+          current_video_idx = switcher_child_index;
+          current_video = videos[current_video_idx]
+          current_video.currentTime = 0;
+          current_video.play();
+          set_play_pause_icon();
+        },
+      });
+      const $img = $("<img>", {
+        class: "thumbnails",
+        alt: "paper",
+        src: $child.data("img-src"),
+      });
+      $input.append($img);
+      const $label = $child.data("label");
+      $input.append($label);
+      $switcher.append($input);
+    });
+  });
+});

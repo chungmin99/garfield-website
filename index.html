@@ -34,19 +34,18 @@
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="anonymous" />
     <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script>
-    <script type="text/javascript">WebFont.load({ google: { families: ["Lato:100,100italic,300,300italic,400,400italic,700,700italic,900,900italic", "Montserrat:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic", "Ubuntu:300,300italic,400,400italic,500,500italic,700,700italic", "Open Sans:300,300italic,400,400italic,600,600italic,700,700italic,800,800italic", "Changa One:400,400italic", "Varela Round:400", "Bungee Shade:regular", "Roboto:300,regular,500", "Bungee Outline:regular"] } });</script>
+    <script
+        type="text/javascript">WebFont.load({ google: { families: ["Lato:100,100italic,300,300italic,400,400italic,700,700italic,900,900italic", "Montserrat:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic", "Ubuntu:300,300italic,400,400italic,500,500italic,700,700italic", "Open Sans:300,300italic,400,400italic,600,600italic,700,700italic,800,800italic", "Changa One:400,400italic", "Varela Round:400", "Bungee Shade:regular", "Roboto:300,regular,500", "Bungee Outline:regular"] } });</script>
     <!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" type="text/javascript"></script><![endif]-->
 
     <!-- JQuery, scripts etc -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
     <script src="script.js" type="text/javascript"></script>
+    <script src="js/carousel_utils.js" type="text/javascript"></script>
 
-    <!-- Stylesheets, including twentytwentywrapper (for video compare) -->
+    <!-- Stylesheets; tabler icons, fonts, ...-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/tabler-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="js/jquery-3.2.1.min.js" type="text/javascript"></script>
-    <script src="js/jquery.event.move.js" type="text/javascript"></script>
-    <script src="js/jquery.twentytwenty.js" type="text/javascript"></script>
-    <link rel="stylesheet" href="css/twentytwenty.css" type="text/css" media="screen" />
 
     <link href="style.css" rel="stylesheet" type="text/css" />
 
@@ -107,7 +106,7 @@
         </div>
         <!-- Submission status -->
         <!-- <div class="title-row">
-            <h2 class="subheader">Arxiv Preprint</h1>
+            <h2 class="subheader">Arxiv Preprint 2024</h1>
         </div> -->
 
         <!-- Paper / code / data URLs -->
@@ -205,17 +204,6 @@
             </div>
         </div>
 
-        <!-- <div class="section base-row add-top-padding"> -->
-            <h1 id="abstract">Overview</h1>
-            <div class="twentytwenty-container">
-                <!-- The before image is first -->
-                <video autobuffer muted autoplay loop controls style="width: 400px;"> <source id="mp4" src="data/teaser.mp4" type="video/mp4"> </video>
-                <!-- The after image is last -->
-                <video autobuffer muted autoplay loop controls style="width: 400px;"> <source id="mp4" src="data/teaser.mp4" type="video/mp4"> </video>
-               </div>
-            </div>
-        <!-- </div> -->
-
         <div class="section base-row add-top-padding">
             <h1 id="abstract">Overview</h1>
             <p class="paragraph">
@@ -227,9 +215,39 @@
                 Why group in 3D? Why scale? Applications?
                 Why group in 3D? Why scale? Applications?
                 Why group in 3D? Why scale? Applications?
-                <!-- &emsp; -->
-                <!-- What GARField does, and what it affords -->
             </p>
+            <h1 class="tldr"><b>
+                Click the thumbnails below to load scenes, see groupings at different scales.
+            </b></h1>
+            <div id="main-results">
+                <div class="switcher" data-switcher-title="Select hierarchy level">
+                    <div data-switcher-label="Coarse"></div>
+                    <div data-switcher-label="Medium"></div>
+                    <div data-switcher-label="Fine"></div>
+                </div>
+                <div id="image-compare-canvas" class="image-compare" data-before-label="RGB" data-after-label="Global Clustering">
+                    <canvas id="canvas"></canvas>
+                </div>
+                <div class="video-bar base-row">
+                    <button id="play-btn" class="video-btn fa fa-lg fa-pause" onclick="play_pause()" style="margin-right: 0px;"></button>
+                    <div style="position: absolute; right: 0px;">
+                        <button class="video-btn fa fa-arrows-alt fa-lg" onclick="fullscreen()"></button>
+                        <button class="video-btn fa fa-download fa-lg" onclick="download()"></button>
+                    </div>
+                </div>
+                <div>
+                    <button class="results-slide-arrow" id="results-slide-arrow-prev" onclick="results_slide_left()">
+                        &#8249;
+                    </button>
+                    <div class="results-slide-row" id="results-objs-scroll">
+                        <div data-img-src="data/favicon.png" data-label="Dozer"></div>
+                        <div data-img-src="data/favicon.png" data-label="Bouquet"></div>
+                    </div>
+                    <button class="results-slide-arrow" id="results-slide-arrow-next" onclick="results_slide_right()">
+                        &#8250;
+                    </button>
+                </div>
+            </div> 
         </div>
 
         <!-- The story should be something like
@@ -247,29 +265,12 @@
          -->
         <div class="section base-row add-top-padding">
             <h1>Why group in 3D?</h1>
+            <img src="data/comparison_sam_garfield.jpg" style="max-width: 80%" />
         </div>
 
         <div class="section base-row add-top-padding">
             <h1>GARField training</h1>
             <img src="data/garfield_trainig.jpg" style="max-width: 100%" />
-        </div>
-
-        <div class="section add-top-padding">
-            <h1 style="text-align: center">Applications</h1>
-            <div>
-                <div class="base-row">
-                    <div>
-                        <a>Foo</a>
-                    </div>
-                    <div>
-                        <a>Bar</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section base-row add-top-padding">
-            <h1>Automatic Scene Decomposition</h1>
         </div>
 
         <!-- Motivation: importance of scale -->
@@ -284,8 +285,26 @@
             <img src="data/multi-scale-masks.png" style="max-width: 70%" />
         </div>
 
+        <div class="section add-top-padding">
+            <h1 style="text-align: center">Applications</h1>
+            <div>
+                <div class="base-row">
+                    <div>
+                        <a>Interactive selection</a>
+                    </div>
+                    <div>
+                        <a>Automatic Decomposition</a>
+                    </div>
+                    <div>
+                        <a>Physics!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <!-- Justify 3D scale -->
-        <div class="section base-row add-top-padding">
+        <!-- <div class="section base-row add-top-padding">
             <h1>Why physical scale?</h1>
             <p class="paragraph">
                 Groupings generated from multiple viewpoints ... fusing them together... shape and sizes may be
@@ -294,7 +313,15 @@
                 and for this metric we choose the diameter of the bounding sphere
             </p>
             <img src="data/3d_scale.jpg" style="max-width: 100%" />
-        </div>
-
+        </div> -->
     </div>
+
+    <!-- Video references for main results... -->
+    <video id="dozer" controls="false" loop autoplay muted class="videos" webkit-playsinline playsinline>
+        <source src="data/dozer.mp4" type="video/mp4">
+    </video>
+    <video id="bouquet" controls="false" loop autoplay muted class="videos" webkit-playsinline playsinline>
+        <source src="data/bouquet.mp4" type="video/mp4">
+    </video>
+
 </body>
