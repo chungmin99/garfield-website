@@ -1,7 +1,7 @@
 // For RGB / global clustering results
 var video_width = 960;
 const VIDEO_ASPECT_RATIO = 16.0 / 9.0;
-var display_level = 0;
+var display_level = 2;
 var video_names = ['dozer', 'bouquet'];
 var videos = [];
 var current_video_idx = 0;
@@ -167,7 +167,7 @@ $(() => {
         type: "radio",
         name: "switcher-group-" + switcher_index.toString(),
         id: linkId,
-        checked: switcher_child_index === 0,
+        checked: switcher_child_index === 2,
         click: function () {
           // Your onclick event logic goes here
           $current.addClass("switcher-hidden");
@@ -187,7 +187,7 @@ $(() => {
       });
       $inputContainer.append($("<div>").append($input).append($label));
 
-      if (switcher_child_index !== 0) {
+      if (switcher_child_index !== 2) {
         $child.addClass("switcher-hidden");
         $input.addClass("switcher-hidden");
         $label.addClass("switcher-hidden");
