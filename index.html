@@ -208,14 +208,8 @@
         <div class="section base-row add-top-padding">
             <h1 id="abstract">Overview</h1>
             <p class="paragraph">
-                Why group in 3D? Why scale? Applications?
-                Why group in 3D? Why scale? Applications?
-                Why group in 3D? Why scale? Applications?
-                Why group in 3D? Why scale? Applications?
-                Why group in 3D? Why scale? Applications?
-                Why group in 3D? Why scale? Applications?
-                Why group in 3D? Why scale? Applications?
-                Why group in 3D? Why scale? Applications?
+                Given multi-level masks from SAM, GARField optimizes a <b>scale-conditioned affinity field</b> describing how tightly grouped different 3D points are. Grouping is a fundamentally multi-scale task,
+                so input masks may be overlapping or conflicting within and across views. GARField's chooses to resolve these ambiguities by conditioning on <b>euclidean scene scale</b>; selecting different hierarchies of groups depending on their 3D size.  Once trained, GARField can be either <b>interactively queried</b> by providing points along with a scale, or <b>produce globally consistent clusterings automatically</b> at a hierarchy of scales.
             </p>
             <h1 class="tldr"><b>
                 Click the thumbnails below to load scenes, see groupings at different scales.
@@ -264,14 +258,14 @@
              - fusing information
              - 3D consistent labels
          -->
-        <div class="section base-row add-top-padding">
-            <h1>Why group in 3D?</h1>
-            <img src="data/comparison_sam_garfield.jpg" style="max-width: 80%" />
-        </div>
+        
 
         <div class="section base-row add-top-padding">
-            <h1>GARField training</h1>
-            <img src="data/garfield_trainig.jpg" style="max-width: 100%" />
+            <h1>Affinity Field Training</h1>
+            <p class="paragraph">
+                GARField uses a contrastive loss to optimize its feature field. Given pairs of rays in a training batch, rays which land outside the same mask are pushed apart in feature space, and those within the same mask are pulled together. Affinity is the L2 distance in feature space between points.
+            </p>
+            <img src="data/garfield_training.jpg" style="max-width: 100%" />
         </div>
 
         <!-- Motivation: importance of scale -->
@@ -283,26 +277,46 @@
                 To reconcile these conflicting signals into a single affinity field, GARField embraces this ambiguity
                 through <i>physical scale</i>, allowing a point to belong to different groups of different sizes.
             </p>
-            <img src="data/multi-scale-masks.png" style="max-width: 70%" />
+            <img src="data/multi-scale-masks.png" style="max-width: 60%" />
         </div>
 
+        <!-- <div class="section base-row add-top-padding">
+            <h1>3D Scale Preprocessing</h1>
+            <p class="paragraph">
+                Given only 2D groups as input, GARField must compute a physical euclidean scale to assign each. We deproject the mask onto NeRF geometry, and assign its scale to be
+                the diameter of a bounding sphere after outlier removal.
+            </p>
+            <img src="data/garfield_preproc.jpg" style="max-width: 30%" />
+        </div> -->
+
         <div class="section add-top-padding">
-            <h1 style="text-align: center">Applications</h1>
             <div>
                 <div class="base-row">
                     <div>
-                        <a>Interactive selection</a>
+                        <h1>Automatic Decomposition</h1>
+                        <p class="paragraph">
+                            GARField's affinity can be recursively clustered to break a scene into smaller and smaller subcomponents.
+                        </p>
+                        <img src="data/louvre_expanded.jpg" style="max-width: 100%" />
                     </div>
                     <div>
-                        <a>Automatic Decomposition</a>
+                        <h1>Interactive Selection</h1>
+                        <img src="data/todo.jpg" style="max-width: 100%" />
                     </div>
                     <div>
-                        <a>Physics!</a>
+                        <h1>Asset Extraction</h1>
+                        <img src="data/todo.jpg" style="max-width: 100%" />
                     </div>
                 </div>
             </div>
         </div>
-
+        <div class="section base-row add-top-padding">
+            <h1>Why Multi-View?</h1>
+            <p class="paragraph">
+                Because SAM only outputs 3 levels of hierarchy, from some viewpoints this can be insufficient to capture fine-grained groups. GARField produces more complete groups by incorporating masks from many different views.
+            </p>
+            <img src="data/comparison_sam_garfield.jpg" style="max-width: 80%" />
+        </div>
 
         <!-- Justify 3D scale -->
         <!-- <div class="section base-row add-top-padding">
