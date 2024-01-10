@@ -323,7 +323,10 @@ $(() => {
         src: $child.data("img-src"),
       });
       $input.append($img);
-      const $label = $child.data("label");
+      const $label = $("<label>", {
+        text: $child.data("label"),
+        class: "thumbnail_label",
+      });
       $input.append($label);
       $switcher.append($input);
     });
