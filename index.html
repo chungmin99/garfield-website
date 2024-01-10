@@ -268,7 +268,15 @@
              - fusing information
              - 3D consistent labels
          -->
-        
+
+        <!-- Just for vertical spacing... -->
+        <div class="section add-top-padding">
+            <div class="base-row">
+                <img src="data/favicon.png" style="height: 20px; margin-left: 5px; margin-right: 5px; margin-top: 40px; margin-bottom: 20px;">
+                <img src="data/favicon.png" style="height: 20px; margin-left: 5px; margin-right: 5px; margin-top: 40px; margin-bottom: 20px;">
+                <img src="data/favicon.png" style="height: 20px; margin-left: 5px; margin-right: 5px; margin-top: 40px; margin-bottom: 20px;">
+            </div>
+         </div>
 
 
         <div class="section add-top-padding">
@@ -276,7 +284,12 @@
                 <div class="base-row">
                     <div>
                         <h1>Interactive Selection</h1>
-                        <img src="data/todo.jpg" style="max-width: 100%" />
+                        <p class="paragraph">
+                            Given a single 3D point, GARField can select multiple groups by thresholding affinity across scale!
+                        </p>
+                        <video id="main-video" muted autoplay loop controls>
+                            <source id="mp4" src="data/interactive_selection.mp4" type="video/mp4">
+                        </video>
                     </div>
                     <div>
                         <h1>Automatic Decomposition</h1>
@@ -288,7 +301,7 @@
                     <div>
                         <h1>Asset Extraction</h1>
                         <p class="paragraph">
-                            GARField can be used to extract 3D-complete assets from casual scene scans, which can then be simulated
+                            GARField can be used to extract 3D-complete assets from casual scene scans, which can then be simulated.
                         </p>
                         <video id="main-video" autobuffer muted autoplay loop controls>
                             <source id="mp4" src="data/physics.mp4" type="video/mp4">
@@ -298,8 +311,17 @@
             </div>
         </div>
 
+        <!-- Just for vertical spacing... -->
+        <div class="section add-top-padding">
+            <div class="base-row">
+                <img src="data/favicon.png" style="height: 20px; margin-left: 5px; margin-right: 5px; margin-top: 40px; margin-bottom: 20px;">
+                <img src="data/favicon.png" style="height: 20px; margin-left: 5px; margin-right: 5px; margin-top: 40px; margin-bottom: 20px;">
+                <img src="data/favicon.png" style="height: 20px; margin-left: 5px; margin-right: 5px; margin-top: 40px; margin-bottom: 20px;">
+            </div>
+         </div>
+
         <div class="section base-row add-top-padding">
-            <h1>Scale-Conditioned Affinity Field Training</h1>
+            <h1>Approach: Scale-Conditioned Affinity Field Training</h1>
             <p class="paragraph">
                 GARField uses a contrastive loss to optimize its feature field. Given pairs of rays in a training batch, rays which land in different 2D masks are pushed apart 
                 in feature space, and those within the same 2D mask are pulled together. Affinity is the L2 distance in feature space between points. 
