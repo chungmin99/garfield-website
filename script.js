@@ -2,7 +2,8 @@
 var video_width = 960;
 const VIDEO_ASPECT_RATIO = 16.0 / 9.0;
 var display_level = 2;
-var video_names = ['dozer', 'bouquet'];
+var video_names = ["keyboard", "louvre", "bouquet", "donuts", "dozer", "succulent"];
+    
 var videos = [];
 var current_video_idx = 0;
 
@@ -322,7 +323,10 @@ $(() => {
         src: $child.data("img-src"),
       });
       $input.append($img);
-      const $label = $child.data("label");
+      const $label = $("<label>", {
+        text: $child.data("label"),
+        class: "thumbnail_label",
+      });
       $input.append($label);
       $switcher.append($input);
     });
