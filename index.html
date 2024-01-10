@@ -209,7 +209,7 @@
             <h1 id="abstract">Overview</h1>
             <p class="paragraph">
                 Given multi-level masks from SAM, GARField optimizes a <b>scale-conditioned affinity field</b> describing how tightly grouped different 3D points are. Grouping is a fundamentally multi-scale task,
-                so input masks may be overlapping or conflicting within and across views. GARField's chooses to resolve these ambiguities by conditioning on <b>euclidean scene scale</b>; selecting different hierarchies of groups depending on their 3D size.  Once trained, GARField can be either <b>interactively queried</b> by providing points along with a scale, or <b>produce globally consistent clusterings automatically</b> at a hierarchy of scales.
+                so input masks may be overlapping or conflicting within and across views. GARField chooses to resolve these ambiguities by conditioning on <b>euclidean scene scale</b>, selecting different hierarchies of groups depending on their 3D size.  Once trained, GARField can be either <b>interactively queried</b> by providing points along with a scale, or <b>produce globally consistent clusterings automatically</b> at a hierarchy of scales.
             </p>
             <h1 class="tldr"><b>
                 Click the thumbnails below to load scenes, see groupings at different scales.
@@ -273,7 +273,7 @@
             <h1>Importance of scale</h1>
             <p class="paragraph">
                 Humans can interpret a scene at multiple levels of granularity. However, this richness also creates
-                ambiguities in grouping, making it unclear how we should supervision for grouping.
+                ambiguities in grouping, making it difficult to use them as supervision.
                 To reconcile these conflicting signals into a single affinity field, GARField embraces this ambiguity
                 through <i>physical scale</i>, allowing a point to belong to different groups of different sizes.
             </p>
