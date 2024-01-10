@@ -13,7 +13,7 @@ function results_slide_left() {
   slider_window = document.getElementById('results-objs-scroll');
   slider_window.scrollLeft = 0;
 }
-function resultsteaser_slide_right() {
+function results_slide_right() {
   slider_window = document.getElementById('results-objs-scroll');
   slider_window.scrollLeft += 1000;
 }
