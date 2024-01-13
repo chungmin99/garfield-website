@@ -14,6 +14,7 @@ function load_videos() {
 }
 
 window.onload = function() {
+  resize_canvas();
   load_videos();
   videos[0].play();
 }
