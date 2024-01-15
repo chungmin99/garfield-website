@@ -2,7 +2,7 @@
 var video_width = 960;
 const VIDEO_ASPECT_RATIO = 16.0 / 9.0;
 var display_level = 2;
-var video_names = ["keyboard", "succulent", "louvre", "bouquet", "donuts", "dozer", "cafe"];
+var video_names = ["keyboard", "succulent", "louvre", "bouquet", "donuts", "dozer", "table", "cafe"];
     
 var videos = [];
 var current_video_idx = 0;
